@@ -29,7 +29,7 @@ inside a `git` repository.
 
 ## usage with pre-commit
 
-This works especially well when integrated with [`pre-commit`'][pre-commit].
+This works especially well when integrated with [`pre-commit`][pre-commit].
 
 
 ```yaml
