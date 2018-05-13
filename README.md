@@ -34,7 +34,7 @@ This works especially well when integrated with [`pre-commit`][pre-commit].
 
 ```yaml
 -   repo: https://github.com/asottile/seed-isort-config
-    rev: v0.0.0
+    rev: v0.1.0
     hooks:
     -   id: seed-isort-config
 -   repo: https://github.com/pre-commit/mirrors-isort
