@@ -107,12 +107,31 @@ def test_integration_extra_file(tmpdir):
         assert tmpdir.join('.isort.cfg').read() == expected
 
 
-def test_integration_no_config(tmpdir, capsys):
+@pytest.mark.parametrize(
+    ('initial_filesystem', 'expected_filesystem'),
+    (
+        (
+            (),
+            (('.isort.cfg', '[settings]\nknown_third_party = cfgv\n'),),
+        ),
+        (
+            (('setup.cfg', '[bdist_wheel]\nuniversal = True\n'),),
+            (('.isort.cfg', '[settings]\nknown_third_party = cfgv\n'),),
+        ),
+    ),
+)
+def test_integration_no_section(
+        tmpdir,
+        initial_filesystem,
+        expected_filesystem,
+):
     with tmpdir.as_cwd():
         tmpdir.join('f.py').write('import cfgv')
+        for filename, initial in initial_filesystem:
+            tmpdir.join(filename).write(initial)
         _make_git()
 
-        assert main(())
+        assert not main(())
 
-        out, _ = capsys.readouterr()
-        assert out.startswith('Could not find a `known_third_party` setting')
+        for filename, expected in expected_filesystem:
+            assert tmpdir.join(filename).read() == expected

@@ -69,12 +69,13 @@ def main(argv=None):
             break
     else:
         print(
-            'Could not find a `known_third_party` setting in any of {}.  '
-            'Set up an initial config and run again!'.format(
-                ', '.join(SUPPORTED_CONF_FILES),
-            ),
+            'Creating an .isort.cfg with a known_third_party imports setting. '
+            'Feel free to move the setting to a different config file in one '
+            'of {}...'.format(', '.format(SUPPORTED_CONF_FILES)),
         )
-        return 1
+
+        with io.open('.isort.cfg', 'a', encoding='UTF-8') as f:
+            f.write('[settings]\nknown_third_party = {}\n'.format(third_party))
 
 
 if __name__ == '__main__':
