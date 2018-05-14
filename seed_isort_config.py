@@ -69,10 +69,10 @@ def main(argv=None):
             break
     else:
         print(
-            'Could not find an isort section in any of '
-            '{}. '
-            'Set up an initial config and '
-            'run again!'.format(', '.join(SUPPORTED_CONF_FILES)),
+            'Could not find a `known_third_party` setting in any of {}.  '
+            'Set up an initial config and run again!'.format(
+                ', '.join(SUPPORTED_CONF_FILES),
+            ),
         )
         return 1
 

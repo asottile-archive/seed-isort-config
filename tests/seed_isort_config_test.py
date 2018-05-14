@@ -54,17 +54,23 @@ def test_integration_isort_cfg(tmpdir):
 
 @pytest.mark.parametrize(
     'filename',
-    list(filter(lambda cf: cf != '.isort.cfg', SUPPORTED_CONF_FILES)),
+    set(SUPPORTED_CONF_FILES) - {'.isort.cfg'},
 )
 def test_integration_non_isort_cfg(filename, tmpdir):
+    conf_start = '[*.py]' if filename == '.editorconfig' else '[settings]'
+
     with tmpdir.as_cwd():
-        tmpdir.join(filename).write('[isort]\nknown_third_party = cfgv\n')
+        tmpdir.join(filename).write(
+            '{}\nknown_third_party = cfgv\n'.format(conf_start),
+        )
         tmpdir.join('f.py').write('import pre_commit\nimport cfgv\n')
         _make_git()
 
         assert not main(())
 
-        expected = '[isort]\nknown_third_party = cfgv,pre_commit\n'
+        expected = (
+            '{}\nknown_third_party = cfgv,pre_commit\n'.format(conf_start)
+        )
         assert tmpdir.join(filename).read() == expected
 
 
@@ -107,4 +113,4 @@ def test_integration_no_config(tmpdir, capsys):
         assert main(())
 
         out, _ = capsys.readouterr()
-        assert out.startswith('Could not find an isort section')
+        assert out.startswith('Could not find a `known_third_party` setting')
