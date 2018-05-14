@@ -115,6 +115,17 @@ def test_integration_extra_file(tmpdir):
             (('.isort.cfg', '[settings]\nknown_third_party = cfgv\n'),),
         ),
         (
+            (('.isort.cfg', '[settings]\ncombine_as_imports = true\n'),),
+            (
+                (
+                    '.isort.cfg',
+                    '[settings]\n'
+                    'combine_as_imports = true\n'
+                    'known_third_party = cfgv\n',
+                ),
+            ),
+        ),
+        (
             (('setup.cfg', '[bdist_wheel]\nuniversal = True\n'),),
             (('.isort.cfg', '[settings]\nknown_third_party = cfgv\n'),),
         ),

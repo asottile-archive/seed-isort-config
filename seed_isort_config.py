@@ -68,14 +68,25 @@ def main(argv=None):
                 f.write(contents)
             break
     else:
+        if os.path.exists('.isort.cfg'):
+            prefix = 'Updating'
+            mode = 'a'
+            contents = 'known_third_party = {}\n'.format(third_party)
+        else:
+            prefix = 'Creating'
+            mode = 'w'
+            contents = '[settings]\nknown_third_party = {}\n'.format(
+                third_party,
+            )
+
         print(
-            'Creating an .isort.cfg with a known_third_party imports setting. '
-            'Feel free to move the setting to a different config file in one '
-            'of {}...'.format(', '.format(SUPPORTED_CONF_FILES)),
+            '{} an .isort.cfg with a known_third_party setting. '
+            'Feel free to move the setting to a different config file in '
+            'one of {}...'.format(prefix, ', '.join(SUPPORTED_CONF_FILES)),
         )
 
-        with io.open('.isort.cfg', 'a', encoding='UTF-8') as f:
-            f.write('[settings]\nknown_third_party = {}\n'.format(third_party))
+        with io.open('.isort.cfg', mode, encoding='UTF-8') as f:
+            f.write(contents)
 
 
 if __name__ == '__main__':
