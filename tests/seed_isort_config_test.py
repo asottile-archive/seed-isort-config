@@ -3,7 +3,6 @@ import subprocess
 import pytest
 
 from seed_isort_config import main
-from seed_isort_config import SUPPORTED_CONF_FILES
 from seed_isort_config import third_party_imports
 from seed_isort_config import THIRD_PARTY_RE
 
@@ -52,25 +51,28 @@ def test_integration_isort_cfg(tmpdir):
         assert tmpdir.join('.isort.cfg').read() == expected
 
 
-@pytest.mark.parametrize(
-    'filename',
-    set(SUPPORTED_CONF_FILES) - {'.isort.cfg'},
-)
-def test_integration_non_isort_cfg(filename, tmpdir):
-    conf_start = '[*.py]' if filename == '.editorconfig' else '[settings]'
-
+def test_integration_editorconfig(tmpdir):
     with tmpdir.as_cwd():
-        tmpdir.join(filename).write(
-            '{}\nknown_third_party = cfgv\n'.format(conf_start),
-        )
+        tmpdir.join('.editorconfig').write('[*.py]\nknown_third_party=cfgv\n')
         tmpdir.join('f.py').write('import pre_commit\nimport cfgv\n')
         _make_git()
 
         assert not main(())
 
-        expected = (
-            '{}\nknown_third_party = cfgv,pre_commit\n'.format(conf_start)
-        )
+        expected = '[*.py]\nknown_third_party=cfgv,pre_commit\n'
+        assert tmpdir.join('.editorconfig').read() == expected
+
+
+@pytest.mark.parametrize('filename', ('setup.cfg', 'tox.ini'))
+def test_integration_non_isort_cfg(filename, tmpdir):
+    with tmpdir.as_cwd():
+        tmpdir.join(filename).write('[isort]\nknown_third_party = cfgv\n')
+        tmpdir.join('f.py').write('import pre_commit\nimport cfgv\n')
+        _make_git()
+
+        assert not main(())
+
+        expected = '[isort]\nknown_third_party = cfgv,pre_commit\n'
         assert tmpdir.join(filename).read() == expected
 
 
