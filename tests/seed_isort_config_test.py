@@ -51,6 +51,18 @@ def test_integration_isort_cfg(tmpdir):
         assert tmpdir.join('.isort.cfg').read() == expected
 
 
+def test_integration_editorconfig(tmpdir):
+    with tmpdir.as_cwd():
+        tmpdir.join('.editorconfig').write('[*.py]\nknown_third_party=cfgv\n')
+        tmpdir.join('f.py').write('import pre_commit\nimport cfgv\n')
+        _make_git()
+
+        assert not main(())
+
+        expected = '[*.py]\nknown_third_party=cfgv,pre_commit\n'
+        assert tmpdir.join('.editorconfig').read() == expected
+
+
 @pytest.mark.parametrize('filename', ('setup.cfg', 'tox.ini'))
 def test_integration_non_isort_cfg(filename, tmpdir):
     with tmpdir.as_cwd():

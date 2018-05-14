@@ -13,6 +13,7 @@ from aspy.refactor_imports.classify import classify_import
 from aspy.refactor_imports.classify import ImportType
 
 
+SUPPORTED_CONF_FILES = ('.editorconfig', '.isort.cfg', 'setup.cfg', 'tox.ini')
 THIRD_PARTY_RE = re.compile(r'^known_third_party(\s*)=(\s*?)[^\s]*$', re.M)
 
 
@@ -53,7 +54,7 @@ def main(argv=None):
 
     third_party = ','.join(sorted(third_party_imports(filenames)))
 
-    for filename in ('.isort.cfg', 'setup.cfg', 'tox.ini'):
+    for filename in SUPPORTED_CONF_FILES:
         if not os.path.exists(filename):
             continue
 
@@ -68,9 +69,10 @@ def main(argv=None):
             break
     else:
         print(
-            'Could not find a `known_third_party` setting in any of '
-            '.isort.cfg, setup.cfg, tox.ini.  '
-            'Set up an initial config and run again!',
+            'Could not find a `known_third_party` setting in any of {}.  '
+            'Set up an initial config and run again!'.format(
+                ', '.join(SUPPORTED_CONF_FILES),
+            ),
         )
         return 1
 
