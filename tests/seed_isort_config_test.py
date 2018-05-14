@@ -3,6 +3,7 @@ import subprocess
 import pytest
 
 from seed_isort_config import main
+from seed_isort_config import SUPPORTED_CONF_FILES
 from seed_isort_config import third_party_imports
 from seed_isort_config import THIRD_PARTY_RE
 
@@ -51,7 +52,10 @@ def test_integration_isort_cfg(tmpdir):
         assert tmpdir.join('.isort.cfg').read() == expected
 
 
-@pytest.mark.parametrize('filename', ('setup.cfg', 'tox.ini'))
+@pytest.mark.parametrize(
+    'filename',
+    list(filter(lambda cf: cf != '.isort.cfg', SUPPORTED_CONF_FILES)),
+)
 def test_integration_non_isort_cfg(filename, tmpdir):
     with tmpdir.as_cwd():
         tmpdir.join(filename).write('[isort]\nknown_third_party = cfgv\n')
@@ -103,4 +107,4 @@ def test_integration_no_config(tmpdir, capsys):
         assert main(())
 
         out, _ = capsys.readouterr()
-        assert out.startswith('Could not find a `known_third_party` setting')
+        assert out.startswith('Could not find an isort section')
