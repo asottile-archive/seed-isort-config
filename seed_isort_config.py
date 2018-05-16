@@ -39,7 +39,7 @@ def third_party_imports(filenames):
     visitor = Visitor()
     for filename in filenames:
         with open(filename, 'rb') as f:
-            visitor.visit(ast.parse(f.read()))
+            visitor.visit(ast.parse(f.read(), filename=filename))
     return visitor.third_party
 
 
