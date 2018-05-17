@@ -18,12 +18,14 @@ THIRD_PARTY_RE = re.compile(r'^known_third_party(\s*)=(\s*?)[^\s]*$', re.M)
 
 
 class Visitor(ast.NodeVisitor):
-    def __init__(self):
+    def __init__(self, appdirs=('.',)):
+        self.appdirs = appdirs
         self.third_party = set()
 
     def _maybe_append_name(self, name):
         name, _, _ = name.partition('.')
-        if classify_import(name) == ImportType.THIRD_PARTY:
+        imp_type = classify_import(name, self.appdirs)
+        if imp_type == ImportType.THIRD_PARTY:
             self.third_party.add(name)
 
     def visit_Import(self, node):
@@ -35,8 +37,8 @@ class Visitor(ast.NodeVisitor):
             self._maybe_append_name(node.module)
 
 
-def third_party_imports(filenames):
-    visitor = Visitor()
+def third_party_imports(filenames, appdirs=('.',)):
+    visitor = Visitor(appdirs)
     for filename in filenames:
         with open(filename, 'rb') as f:
             visitor.visit(ast.parse(f.read(), filename=filename))
@@ -46,13 +48,21 @@ def third_party_imports(filenames):
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--extra', action='append', default=[])
+    parser.add_argument(
+        '--application-directories', default='.',
+        help=(
+            'Colon separated directories that are considered top-level '
+            'application directories.  Defaults to `%(default)s`'
+        ),
+    )
     args = parser.parse_args(argv)
 
     cmd = ('git', 'ls-files', '--', '*.py')
     filenames = subprocess.check_output(cmd).decode('UTF-8').splitlines()
     filenames.extend(args.extra)
 
-    third_party = ','.join(sorted(third_party_imports(filenames)))
+    appdirs = args.application_directories.split(':')
+    third_party = ','.join(sorted(third_party_imports(filenames, appdirs)))
 
     for filename in SUPPORTED_CONF_FILES:
         if not os.path.exists(filename):

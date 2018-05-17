@@ -27,6 +27,9 @@ automatically.
 `seed-isort-config` provides a single executable by the same name.  Run it
 inside a `git` repository.
 
+To specify custom application roots (such as with the `src` pattern) pass a
+colon-separated `--application-directories` parameter.
+
 ## usage with pre-commit
 
 This works especially well when integrated with [`pre-commit`][pre-commit].
