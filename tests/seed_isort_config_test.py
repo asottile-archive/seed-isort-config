@@ -146,3 +146,16 @@ def test_integration_no_section(
 
         for filename, expected in expected_filesystem:
             assert tmpdir.join(filename).read() == expected
+
+
+def test_integration_src_layout(tmpdir):
+    with tmpdir.as_cwd():
+        src = tmpdir.join('src').ensure_dir()
+        src.join('f.py').write('import cfgv')
+        src.join('g.py').write('import f')
+        _make_git()
+
+        assert not main(('--application-directories', 'src'))
+
+        expected = '[settings]\nknown_third_party = cfgv\n'
+        assert tmpdir.join('.isort.cfg').read() == expected
