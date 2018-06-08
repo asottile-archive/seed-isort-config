@@ -4,7 +4,7 @@ setup(
     name='seed_isort_config',
     description='Statically populate the `known_third_party` `isort` setting.',
     url='https://github.com/asottile/seed-isort-config',
-    version='1.0.0',
+    version='1.0.1',
     author='Anthony Sottile',
     author_email='asottile@umich.edu',
     classifiers=[
