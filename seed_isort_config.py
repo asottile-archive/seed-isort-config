@@ -13,6 +13,7 @@ from aspy.refactor_imports.classify import classify_import
 from aspy.refactor_imports.classify import ImportType
 
 
+ENV_BLACKLIST = frozenset(('GIT_LITERAL_PATHSPECS', 'GIT_GLOB_PATHSPECS'))
 SUPPORTED_CONF_FILES = ('.editorconfig', '.isort.cfg', 'setup.cfg', 'tox.ini')
 THIRD_PARTY_RE = re.compile(r'^known_third_party(\s*)=(\s*?)[^\s]*$', re.M)
 
@@ -58,8 +59,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     cmd = ('git', 'ls-files', '--', '*.py')
-    filenames = subprocess.check_output(cmd).decode('UTF-8').splitlines()
-    filenames.extend(args.extra)
+    env = {k: v for k, v in os.environ.items() if k not in ENV_BLACKLIST}
+    out = subprocess.check_output(cmd, env=env).decode('UTF-8')
+    filenames = out.splitlines() + args.extra
 
     appdirs = args.application_directories.split(':')
     third_party = ','.join(sorted(third_party_imports(filenames, appdirs)))
