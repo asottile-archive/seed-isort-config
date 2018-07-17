@@ -49,6 +49,10 @@ This works especially well when integrated with [`pre-commit`][pre-commit].
 In this configuration, `seed-isort-config` will adjust the `known_third_party`
 section of the `isort` configuration before `isort` runs!
 
+Note that `seed-isort-config` doesn't act like a normal pre-commit linter so
+exclusion must be configured through `args: [--exclude=...]` instead.
+`--exclude` takes a python regular expression.
+
 [isort]: https://github.com/timothycrosley/isort
 [aspy.refactor_imports]: https://github.com/asottile/aspy.refactor_imports
 [reorder_python_imports]: https://github.com/asottile/reorder_python_imports

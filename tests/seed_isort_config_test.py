@@ -167,3 +167,15 @@ def test_integration_git_literal_pathspecs_1(tmpdir):
     """an emacs plugin, magit calls pre-commit in this way, see #5"""
     with mock.patch.dict(os.environ, {'GIT_LITERAL_PATHSPECS': '1'}):
         test_integration_isort_cfg(tmpdir)
+
+
+def test_exclude(tmpdir):
+    with tmpdir.as_cwd():
+        tmpdir.join('f.py').write('import cfgv\n')
+        tmpdir.join('g.py').write('syntax error')
+        _make_git()
+
+        assert not main(('--exclude', '^g.py$'))
+
+        expected = '[settings]\nknown_third_party = cfgv\n'
+        assert tmpdir.join('.isort.cfg').read() == expected
