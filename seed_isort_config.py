@@ -49,6 +49,7 @@ def third_party_imports(filenames, appdirs=('.',)):
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--extra', action='append', default=[])
+    parser.add_argument('--exclude', default='^$')
     parser.add_argument(
         '--application-directories', default='.',
         help=(
@@ -62,6 +63,9 @@ def main(argv=None):
     env = {k: v for k, v in os.environ.items() if k not in ENV_BLACKLIST}
     out = subprocess.check_output(cmd, env=env).decode('UTF-8')
     filenames = out.splitlines() + args.extra
+
+    exclude = re.compile(args.exclude)
+    filenames = [f for f in filenames if not exclude.search(f)]
 
     appdirs = args.application_directories.split(':')
     third_party = ','.join(sorted(third_party_imports(filenames, appdirs)))
