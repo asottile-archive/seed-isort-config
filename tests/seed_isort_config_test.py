@@ -163,6 +163,19 @@ def test_integration_src_layout(tmpdir):
         assert tmpdir.join('.isort.cfg').read() == expected
 
 
+def test_integration_settings_path(tmpdir):
+    with tmpdir.as_cwd():
+        src = tmpdir.join('src').ensure_dir()
+        src.join('f.py').write('import cfgv')
+        _make_git()
+
+        assert not main(('--settings-path', 'src'))
+
+        expected = '[settings]\nknown_third_party = cfgv\n'
+        assert src.join('.isort.cfg').read() == expected
+        assert not tmpdir.join('.isort.cfg').check()
+
+
 def test_integration_git_literal_pathspecs_1(tmpdir):
     """an emacs plugin, magit calls pre-commit in this way, see #5"""
     with mock.patch.dict(os.environ, {'GIT_LITERAL_PATHSPECS': '1'}):

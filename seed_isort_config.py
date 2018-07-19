@@ -57,6 +57,13 @@ def main(argv=None):
             'application directories.  Defaults to `%(default)s`'
         ),
     )
+    parser.add_argument(
+        '--settings-path', default='.',
+        help=(
+            'Directory containing isort config file. '
+            'Defaults to `%(default)s`'
+        ),
+    )
     args = parser.parse_args(argv)
 
     cmd = ('git', 'ls-files', '--', '*.py')
@@ -71,6 +78,7 @@ def main(argv=None):
     third_party = ','.join(sorted(third_party_imports(filenames, appdirs)))
 
     for filename in SUPPORTED_CONF_FILES:
+        filename = os.path.join(args.settings_path, filename)
         if not os.path.exists(filename):
             continue
 
@@ -84,7 +92,8 @@ def main(argv=None):
                 f.write(contents)
             break
     else:
-        if os.path.exists('.isort.cfg'):
+        filename = os.path.join(args.settings_path, '.isort.cfg')
+        if os.path.exists(filename):
             prefix = 'Updating'
             mode = 'a'
             contents = 'known_third_party = {}\n'.format(third_party)
@@ -101,7 +110,13 @@ def main(argv=None):
             'one of {}...'.format(prefix, ', '.join(SUPPORTED_CONF_FILES)),
         )
 
-        with io.open('.isort.cfg', mode, encoding='UTF-8') as f:
+        try:
+            os.makedirs(args.settings_path)
+        except OSError:
+            if not os.path.isdir(args.settings_path):
+                raise
+
+        with io.open(filename, mode, encoding='UTF-8') as f:
             f.write(contents)
 
 
