@@ -169,11 +169,11 @@ def test_integration_settings_path(tmpdir):
         src.join('f.py').write('import cfgv')
         _make_git()
 
-        assert not main(('--settings-path', 'src'))
+        assert not main(('--settings-path', 'cfg'))
 
         expected = '[settings]\nknown_third_party = cfgv\n'
-        assert src.join('.isort.cfg').read() == expected
-        assert not tmpdir.join('.isort.cfg').check()
+        assert tmpdir.join('cfg/.isort.cfg').read() == expected
+        assert not tmpdir.join('.isort.cfg').exists()
 
 
 def test_integration_git_literal_pathspecs_1(tmpdir):
