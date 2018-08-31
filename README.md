@@ -30,10 +30,10 @@ inside a `git` repository.
 To specify custom application roots (such as with the `src` pattern) pass a
 colon-separated `--application-directories` parameter.
 
-Specific files may be excluded from the process using the `exclude`
-flag.
+Files may be excluded from the process using the `--exclude` flag.
+This argument takes a python regular expression.
 
-Calling `seed-isort-config --help` provides more information.
+For a full list of arguments, see `seed-isort-config --help`.
 
 ## usage with pre-commit
 
@@ -55,8 +55,8 @@ In this configuration, `seed-isort-config` will adjust the `known_third_party`
 section of the `isort` configuration before `isort` runs!
 
 Note that `seed-isort-config` doesn't act like a normal pre-commit linter so
-file exclusion must be configured through `args: [--exclude=tests/.*\.py]` instead.
-The argument takes a python regular expression.
+file exclusion must be configured through `args: [--exclude=...]` instead.
+For example: `args: [--exclude=tests/.*\.py]`.
 
 [isort]: https://github.com/timothycrosley/isort
 [aspy.refactor_imports]: https://github.com/asottile/aspy.refactor_imports
