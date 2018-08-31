@@ -30,15 +30,10 @@ inside a `git` repository.
 To specify custom application roots (such as with the `src` pattern) pass a
 colon-separated `--application-directories` parameter.
 
-```console
-$ seed-isort-config  --application-directories=src:.
-```
+Specific files may be excluded from the process using the `exclude`
+flag.
 
-Specific files may be excluded from the process. For instance:
-
-```console
-$ seed-isort-config --exclude='tests/.*\.py'
-```
+Calling `seed-isort-config --help` provides more information.
 
 ## usage with pre-commit
 
