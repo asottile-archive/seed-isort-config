@@ -60,19 +60,8 @@ In this configuration, `seed-isort-config` will adjust the `known_third_party`
 section of the `isort` configuration before `isort` runs!
 
 Note that `seed-isort-config` doesn't act like a normal pre-commit linter so
-file exclusion must be configured through `args: [--exclude=...]` instead.
+file exclusion must be configured through `args: [--exclude=tests/.*\.py]` instead.
 The argument takes a python regular expression.
-
-```yaml
-- repo: https://github.com/asottile/seed-isort-config
-  rev: v1.2.0
-  hooks:
-  - id: seed-isort-config
-    args: [
-      --application-directories, 'src:.',
-      --exclude, 'tests/.*\.py',
-    ]
-```
 
 [isort]: https://github.com/timothycrosley/isort
 [aspy.refactor_imports]: https://github.com/asottile/aspy.refactor_imports
