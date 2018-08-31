@@ -70,7 +70,7 @@ The argument takes a python regular expression.
   - id: seed-isort-config
     args: [
       --application-directories, 'src:.',
-      --exclude, 'tests/.*\.py'
+      --exclude, 'tests/.*\.py',
     ]
 ```
 
