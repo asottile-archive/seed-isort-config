@@ -35,6 +35,15 @@ This argument takes a python regular expression.
 
 For a full list of arguments, see `seed-isort-config --help`.
 
+## getting started
+
+`seed-isort-config` looks for an existing `known_third_party` setting in an
+isort configuration file.  It will modify that if it exists, otherwise it'll
+create a brand new `.isort.cfg` file.
+
+The easiest way to get started is to just add a blank `known_third_parth =`
+section to your isort configuration.
+
 ## usage with pre-commit
 
 This works especially well when integrated with [`pre-commit`][pre-commit].
