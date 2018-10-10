@@ -41,7 +41,7 @@ For a full list of arguments, see `seed-isort-config --help`.
 isort configuration file.  It will modify that if it exists, otherwise it'll
 create a brand new `.isort.cfg` file.
 
-The easiest way to get started is to just add a blank `known_third_parth =`
+The easiest way to get started is to just add a blank `known_third_party =`
 section to your isort configuration.
 
 ## usage with pre-commit
