@@ -30,12 +30,14 @@ class Visitor(ast.NodeVisitor):
             self.third_party.add(name)
 
     def visit_Import(self, node):
-        for name in node.names:
-            self._maybe_append_name(name.name)
+        if node.col_offset == 0:
+            for name in node.names:
+                self._maybe_append_name(name.name)
 
     def visit_ImportFrom(self, node):
-        if not node.level:
-            self._maybe_append_name(node.module)
+        if node.col_offset == 0:
+            if not node.level:
+                self._maybe_append_name(node.module)
 
 
 def third_party_imports(filenames, appdirs=('.',)):

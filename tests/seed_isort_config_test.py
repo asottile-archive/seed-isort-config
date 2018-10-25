@@ -23,16 +23,35 @@ def test_list_third_party_imports(tmpdir):
         tmpdir.join('f.py').write('import cfgv\n')
         tmpdir.join('g.py').write('import os, pre_commit, f\n')
         tmpdir.join('h.py').write('from tokenize_rt import ESCAPED_NL\n')
-        pkgdir = tmpdir.join('pkg').ensure_dir()
-        pkgdir.join('__init__.py').ensure()
-        pkgdir.join('i.py').write('x = 1\n')
-        pkgdir.join('j.py').write('from .i import x\n')
-
         assert third_party_imports(()) == set()
         assert third_party_imports(('f.py',)) == {'cfgv'}
         assert third_party_imports(('f.py', 'g.py')) == {'pre_commit', 'cfgv'}
         assert third_party_imports(('h.py',)) == {'tokenize_rt'}
+
+
+def test_third_party_imports_pkg(tmpdir):
+    with tmpdir.as_cwd():
+        pkgdir = tmpdir.join('pkg').ensure_dir()
+        pkgdir.join('__init__.py').ensure()
+        pkgdir.join('i.py').write('x = 1\n')
+        pkgdir.join('j.py').write('from .i import x\n')
         assert third_party_imports(('pkg/i.py', 'pkg/j.py')) == set()
+
+
+def test_third_party_imports_not_top_level(tmpdir):
+    with tmpdir.as_cwd():
+        tmpdir.join('f.py').write(
+            'import cfgv\n'
+            'try:\n'
+            '    from x import y\n'
+            'except ImportError:\n'
+            '    from z import y\n'
+            'try:\n'
+            '    import x\n'
+            'except ImportError:\n'
+            '    import y\n',
+        )
+        assert third_party_imports(('f.py',)) == {'cfgv'}
 
 
 def _make_git():
