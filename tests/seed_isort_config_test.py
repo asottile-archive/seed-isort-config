@@ -75,14 +75,16 @@ def test_integration_isort_cfg(tmpdir):
 
 def test_integration_known_packages(tmpdir):
     with tmpdir.as_cwd():
-        tmpdir.join('.isort.cfg').write('[settings]\nknown_django=django\nknown_third_party=\n')
-        tmpdir.join('f.py').write('import pre_commit\nimport cfgv\nimport django\n')
-        tmpdir.join('g.py').write('import f\nimport os\n')
+        settings = '[settings]\nknown_django=django\nknown_third_party=\n'
+        tmpdir.join('.isort.cfg').write(settings)
+        tmpdir.join('f.py').write('import pre_commit\nimport cfgv\n')
+        tmpdir.join('g.py').write('import f\nimport os\nimport django\n')
         _make_git()
 
         assert not main(())
 
-        expected = '[settings]\nknown_django=django\nknown_third_party=cfgv,pre_commit\n'
+        expected = ('[settings]\nknown_django=django\n'
+                    'known_third_party=cfgv,pre_commit\n')
         assert tmpdir.join('.isort.cfg').read() == expected
 
 
