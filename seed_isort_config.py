@@ -16,7 +16,9 @@ from aspy.refactor_imports.classify import ImportType
 ENV_BLACKLIST = frozenset(('GIT_LITERAL_PATHSPECS', 'GIT_GLOB_PATHSPECS'))
 SUPPORTED_CONF_FILES = ('.editorconfig', '.isort.cfg', 'setup.cfg', 'tox.ini')
 THIRD_PARTY_RE = re.compile(r'^known_third_party(\s*)=(\s*?)[^\s]*$', re.M)
-KNOWN_PACKAGES_RE = re.compile(r'^known_((?!third_party)\w+)\s*=\s*?([^\s]*)$', re.M)
+KNOWN_PACKAGES_RE = re.compile(
+    r'^known_((?!third_party)\w+)\s*=\s*?([^\s]*)$', re.M
+)
 
 
 class Visitor(ast.NodeVisitor):
