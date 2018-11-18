@@ -16,8 +16,8 @@ from aspy.refactor_imports.classify import ImportType
 ENV_BLACKLIST = frozenset(('GIT_LITERAL_PATHSPECS', 'GIT_GLOB_PATHSPECS'))
 SUPPORTED_CONF_FILES = ('.editorconfig', '.isort.cfg', 'setup.cfg', 'tox.ini')
 THIRD_PARTY_RE = re.compile(r'^known_third_party(\s*)=(\s*?)[^\s]*$', re.M)
-KNOWN_PACKAGES_RE = re.compile(
-    r'^known_((?!third_party)\w+)\s*=\s*?([^\s]*)$', re.M,
+KNOWN_OTHER_RE = re.compile(
+    r'^known_((?!third_party)\w+)\s*=\s*([^\s]*)$', re.M,
 )
 
 
@@ -90,9 +90,8 @@ def main(argv=None):
         with io.open(filename, encoding='UTF-8') as f:
             contents = f.read()
 
-        for match in KNOWN_PACKAGES_RE.finditer(contents):
-            known_packages = [p.strip() for p in match.group(2).split(',')]
-            third_party -= set(known_packages)
+        for match in KNOWN_OTHER_RE.finditer(contents):
+            third_party -= set(match.group(2).split(','))
 
         if THIRD_PARTY_RE.search(contents):
             third_party = ','.join(sorted(third_party))
