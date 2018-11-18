@@ -71,7 +71,6 @@ def test_integration_isort_cfg(tmpdir):
         expected = '[settings]\nknown_third_party=cfgv,pre_commit\n'
         assert tmpdir.join('.isort.cfg').read() == expected
 
-        
 
 def test_integration_known_packages(tmpdir):
     with tmpdir.as_cwd():
