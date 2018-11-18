@@ -83,8 +83,8 @@ def test_integration_known_packages(tmpdir):
 
         assert not main(())
 
-        expected = ('[settings]\nknown_django=django\n'
-                    'known_third_party=cfgv,pre_commit\n')
+        expected = '[settings]\nknown_django=django\n'
+        expected += 'known_third_party=cfgv,pre_commit\n'
         assert tmpdir.join('.isort.cfg').read() == expected
 
 
