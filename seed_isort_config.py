@@ -16,6 +16,7 @@ from aspy.refactor_imports.classify import ImportType
 ENV_BLACKLIST = frozenset(('GIT_LITERAL_PATHSPECS', 'GIT_GLOB_PATHSPECS'))
 SUPPORTED_CONF_FILES = ('.editorconfig', '.isort.cfg', 'setup.cfg', 'tox.ini')
 THIRD_PARTY_RE = re.compile(r'^known_third_party(\s*)=(\s*?)[^\s]*$', re.M)
+KNOW_PACKAGES_RE = re.compile(r'^known_((?!third_party)\w+)\s*=\s*?([^\s]*)$', re.M)
 
 
 class Visitor(ast.NodeVisitor):
@@ -77,7 +78,7 @@ def main(argv=None):
     filenames = [f for f in filenames if not exclude.search(f)]
 
     appdirs = args.application_directories.split(':')
-    third_party = ','.join(sorted(third_party_imports(filenames, appdirs)))
+    third_party = third_party_imports(filenames, appdirs)
 
     for filename in SUPPORTED_CONF_FILES:
         filename = os.path.join(args.settings_path, filename)
@@ -87,7 +88,12 @@ def main(argv=None):
         with io.open(filename, encoding='UTF-8') as f:
             contents = f.read()
 
+        for match in KNOWN_PACKAGES_RE.finditer(contents):
+            known_packages = [p.strip() for p in match.group(2).split(',')]
+            third_party -= set(known_packages)
+
         if THIRD_PARTY_RE.search(contents):
+            third_party = ','.join(sorted(third_party))
             replacement = r'known_third_party\1=\2{}'.format(third_party)
             contents = THIRD_PARTY_RE.sub(replacement, contents)
             with io.open(filename, 'w', encoding='UTF-8') as f:
@@ -95,6 +101,7 @@ def main(argv=None):
             break
     else:
         filename = os.path.join(args.settings_path, '.isort.cfg')
+        third_party = ','.join(sorted(third_party))
         if os.path.exists(filename):
             prefix = 'Updating'
             mode = 'a'
