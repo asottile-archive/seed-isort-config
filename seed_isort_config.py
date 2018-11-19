@@ -96,10 +96,13 @@ def main(argv=None):
         if THIRD_PARTY_RE.search(contents):
             third_party = ','.join(sorted(third_party))
             replacement = r'known_third_party\1=\2{}'.format(third_party)
-            contents = THIRD_PARTY_RE.sub(replacement, contents)
-            with io.open(filename, 'w', encoding='UTF-8') as f:
-                f.write(contents)
-            break
+            new_contents = THIRD_PARTY_RE.sub(replacement, contents)
+            if new_contents == contents:
+                return 0
+            else:
+                with io.open(filename, 'w', encoding='UTF-8') as f:
+                    f.write(new_contents)
+                return 1
     else:
         filename = os.path.join(args.settings_path, '.isort.cfg')
         third_party = ','.join(sorted(third_party))
@@ -128,6 +131,7 @@ def main(argv=None):
 
         with io.open(filename, mode, encoding='UTF-8') as f:
             f.write(contents)
+        return 1
 
 
 if __name__ == '__main__':
