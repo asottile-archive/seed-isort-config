@@ -66,7 +66,7 @@ def test_integration_isort_cfg(tmpdir):
         tmpdir.join('g.py').write('import f\nimport os\n')
         _make_git()
 
-        assert not main(())
+        assert main(()) == 1
 
         expected = '[settings]\nknown_third_party=cfgv,pre_commit\n'
         assert tmpdir.join('.isort.cfg').read() == expected
@@ -80,7 +80,7 @@ def test_integration_known_packages(tmpdir):
         tmpdir.join('g.py').write('import f\nimport os\nimport django\n')
         _make_git()
 
-        assert not main(())
+        assert main(()) == 1
 
         expected = (
             '[settings]\n'
@@ -96,7 +96,7 @@ def test_integration_editorconfig(tmpdir):
         tmpdir.join('f.py').write('import pre_commit\nimport cfgv\n')
         _make_git()
 
-        assert not main(())
+        assert main(()) == 1
 
         expected = '[*.py]\nknown_third_party=cfgv,pre_commit\n'
         assert tmpdir.join('.editorconfig').read() == expected
@@ -109,7 +109,7 @@ def test_integration_non_isort_cfg(filename, tmpdir):
         tmpdir.join('f.py').write('import pre_commit\nimport cfgv\n')
         _make_git()
 
-        assert not main(())
+        assert main(()) == 1
 
         expected = '[isort]\nknown_third_party = cfgv,pre_commit\n'
         assert tmpdir.join(filename).read() == expected
@@ -122,7 +122,7 @@ def test_integration_multiple_config_files_exist(tmpdir):
         tmpdir.join('f.py').write('import cfgv')
         _make_git()
 
-        assert not main(())
+        assert main(()) == 1
 
         expected = '[isort]\nknown_third_party=cfgv\n'
         assert tmpdir.join('tox.ini').read() == expected
@@ -135,12 +135,12 @@ def test_integration_extra_file(tmpdir):
         tmpdir.join('f.py').write('import pre_commit\n')
         _make_git()
 
-        assert not main(())
+        assert main(()) == 1
 
         expected = '[settings]\nknown_third_party=pre_commit\n'
         assert tmpdir.join('.isort.cfg').read() == expected
 
-        assert not main(('--extra', 'exe'))
+        assert main(('--extra', 'exe'))
 
         expected = '[settings]\nknown_third_party=cfgv,pre_commit\n'
         assert tmpdir.join('.isort.cfg').read() == expected
@@ -181,7 +181,7 @@ def test_integration_no_section(
             tmpdir.join(filename).write(initial)
         _make_git()
 
-        assert not main(())
+        assert main(()) == 1
 
         for filename, expected in expected_filesystem:
             assert tmpdir.join(filename).read() == expected
@@ -194,7 +194,7 @@ def test_integration_src_layout(tmpdir):
         src.join('g.py').write('import f')
         _make_git()
 
-        assert not main(('--application-directories', 'src'))
+        assert main(('--application-directories', 'src')) == 1
 
         expected = '[settings]\nknown_third_party = cfgv\n'
         assert tmpdir.join('.isort.cfg').read() == expected
@@ -206,7 +206,7 @@ def test_integration_settings_path(tmpdir):
         src.join('f.py').write('import cfgv')
         _make_git()
 
-        assert not main(('--settings-path', 'cfg'))
+        assert main(('--settings-path', 'cfg')) == 1
 
         expected = '[settings]\nknown_third_party = cfgv\n'
         assert tmpdir.join('cfg/.isort.cfg').read() == expected
@@ -225,7 +225,19 @@ def test_exclude(tmpdir):
         tmpdir.join('g.py').write('syntax error')
         _make_git()
 
-        assert not main(('--exclude', '^g.py$'))
+        assert main(('--exclude', '^g.py$')) == 1
 
         expected = '[settings]\nknown_third_party = cfgv\n'
         assert tmpdir.join('.isort.cfg').read() == expected
+
+
+def test_returns_zero_no_changes(tmpdir):
+    with tmpdir.as_cwd():
+        cfg = tmpdir.join('.isort.cfg')
+        cfg.write('[settings]\nknown_third_party=cfgv\n')
+        tmpdir.join('f.py').write('import cfgv\n')
+        _make_git()
+
+        assert main(()) == 0
+
+        assert cfg.read() == '[settings]\nknown_third_party=cfgv\n'
