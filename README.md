@@ -42,7 +42,8 @@ isort configuration file.  It will modify that if it exists, otherwise it'll
 create a brand new `.isort.cfg` file.
 
 The easiest way to get started is to just add a blank `known_third_party =`
-section to your isort configuration.
+section to your isort configuration (or `known_third_party = []` if you are
+using `pyproject.toml`).
 
 ## usage with pre-commit
 
