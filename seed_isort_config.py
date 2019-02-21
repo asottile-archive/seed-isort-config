@@ -14,10 +14,12 @@ from aspy.refactor_imports.classify import ImportType
 
 
 ENV_BLACKLIST = frozenset(('GIT_LITERAL_PATHSPECS', 'GIT_GLOB_PATHSPECS'))
-SUPPORTED_CONF_FILES = ('.editorconfig', '.isort.cfg', 'setup.cfg', 'tox.ini')
-THIRD_PARTY_RE = re.compile(r'^known_third_party(\s*)=(\s*?)[^\s]*$', re.M)
+SUPPORTED_CONF_FILES = (
+    '.editorconfig', '.isort.cfg', 'setup.cfg', 'tox.ini', 'pyproject.toml',
+)
+THIRD_PARTY_RE = re.compile(r'^known_third_party(\s*)=(\s*?)(?:\S.*)?$', re.M)
 KNOWN_OTHER_RE = re.compile(
-    r'^known_((?!third_party)\w+)\s*=\s*([^\s]*)$', re.M,
+    r'^known_((?!third_party)\w+)\s*=\s*(.*)$', re.M,
 )
 
 
@@ -49,6 +51,22 @@ def third_party_imports(filenames, appdirs=('.',)):
         with open(filename, 'rb') as f:
             visitor.visit(ast.parse(f.read(), filename=filename))
     return visitor.third_party
+
+
+def ini_load(imports):
+    return imports.strip().split(',')
+
+
+def ini_dump(imports):
+    return ','.join(imports)
+
+
+def toml_load(imports):
+    return ast.literal_eval(imports)
+
+
+def toml_dump(imports):
+    return '[{}]'.format(', '.join('"{}"'.format(i) for i in imports))
 
 
 def main(argv=None):
@@ -87,14 +105,21 @@ def main(argv=None):
         if not os.path.exists(filename):
             continue
 
+        if filename.endswith('.toml'):
+            load = toml_load
+            dump = toml_dump
+        else:
+            load = ini_load
+            dump = ini_dump
+
         with io.open(filename, encoding='UTF-8') as f:
             contents = f.read()
 
         for match in KNOWN_OTHER_RE.finditer(contents):
-            third_party -= set(match.group(2).split(','))
+            third_party -= set(load(match.group(2)))
 
         if THIRD_PARTY_RE.search(contents):
-            third_party = ','.join(sorted(third_party))
+            third_party = dump(sorted(third_party))
             replacement = r'known_third_party\1=\2{}'.format(third_party)
             new_contents = THIRD_PARTY_RE.sub(replacement, contents)
             if new_contents == contents:
