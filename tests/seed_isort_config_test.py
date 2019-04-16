@@ -94,7 +94,7 @@ def test_integration_known_packages_pyproject_toml(tmpdir):
     with tmpdir.as_cwd():
         cfg = tmpdir.join('pyproject.toml')
         cfg.write(
-            '[tool.isort]\nknown_django="django"\nknown_third_party=""\n',
+            '[tool.isort]\nknown_django=["django"]\nknown_third_party=[]\n',
         )
         tmpdir.join('f.py').write('import pre_commit\nimport cfgv\n')
         tmpdir.join('g.py').write('import f\nimport os\nimport django\n')
@@ -104,8 +104,8 @@ def test_integration_known_packages_pyproject_toml(tmpdir):
 
         expected = (
             '[tool.isort]\n'
-            'known_django="django"\n'
-            'known_third_party="cfgv,pre_commit"\n'
+            'known_django=["django"]\n'
+            'known_third_party=["cfgv", "pre_commit"]\n'
         )
         assert cfg.read() == expected
 
@@ -138,13 +138,13 @@ def test_integration_non_isort_cfg(filename, tmpdir):
 def test_integration_pyproject_toml(tmpdir):
     with tmpdir.as_cwd():
         cfg = tmpdir.join('pyproject.toml')
-        cfg.write('[tool.isort]\nknown_third_party = "cfgv"\n')
+        cfg.write('[tool.isort]\nknown_third_party = ["cfgv"]\n')
         tmpdir.join('f.py').write('import pre_commit\nimport cfgv\n')
         _make_git()
 
         assert main(()) == 1
 
-        expected = '[tool.isort]\nknown_third_party = "cfgv,pre_commit"\n'
+        expected = '[tool.isort]\nknown_third_party = ["cfgv", "pre_commit"]\n'
         assert cfg.read() == expected
 
 
@@ -279,10 +279,10 @@ def test_returns_zero_no_changes(tmpdir):
 def test_returns_zero_no_changes_pyproject_toml(tmpdir):
     with tmpdir.as_cwd():
         cfg = tmpdir.join('pyproject.toml')
-        cfg.write('[settings]\nknown_third_party="cfgv"\n')
+        cfg.write('[settings]\nknown_third_party=["cfgv"]\n')
         tmpdir.join('f.py').write('import cfgv\n')
         _make_git()
 
         assert main(()) == 0
 
-        assert cfg.read() == '[settings]\nknown_third_party="cfgv"\n'
+        assert cfg.read() == '[settings]\nknown_third_party=["cfgv"]\n'
