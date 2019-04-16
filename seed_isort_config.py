@@ -145,7 +145,10 @@ def main(argv=None):
         print(
             '{} an .isort.cfg with a known_third_party setting. '
             'Feel free to move the setting to a different config file in '
-            'one of {}...'.format(prefix, ', '.join(SUPPORTED_CONF_FILES)),
+            'one of {}.\n\n'
+            'This setting should be committed.'.format(
+                prefix, ', '.join(SUPPORTED_CONF_FILES),
+            ),
         )
 
         try:
