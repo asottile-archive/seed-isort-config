@@ -62,11 +62,11 @@ def ini_dump(imports):
 
 
 def toml_load(imports):
-    return ast.literal_eval(imports)
+    return ini_load(ast.literal_eval(imports))
 
 
 def toml_dump(imports):
-    return '[{}]'.format(', '.join('"{}"'.format(i) for i in imports))
+    return '"{}"'.format(ini_dump(imports))
 
 
 def main(argv=None):
