@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/asottile/seed-isort-config.svg?branch=master)](https://travis-ci.org/asottile/seed-isort-config)
-[![Coverage Status](https://coveralls.io/repos/github/asottile/seed-isort-config/badge.svg?branch=master)](https://coveralls.io/github/asottile/seed-isort-config?branch=master)
+[![Build Status](https://dev.azure.com/asottile/asottile/_apis/build/status/asottile.pyupgrade?branchName=master)](https://dev.azure.com/asottile/asottile/_build/latest?definitionId=20&branchName=master)
+[![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/asottile/asottile/20/master.svg)](https://dev.azure.com/asottile/asottile/_build/latest?definitionId=20&branchName=master)
 
 seed-isort-config
 =================
