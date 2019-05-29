@@ -286,3 +286,24 @@ def test_returns_zero_no_changes_pyproject_toml(tmpdir):
         assert main(()) == 0
 
         assert cfg.read() == '[settings]\nknown_third_party=["cfgv"]\n'
+
+
+# regression test for issue #37
+def test_removing_file_after_git_add(tmpdir):
+    with tmpdir.as_cwd():
+        tmpdir.join('.isort.cfg').write('[settings]\nknown_third_party=\n')
+        tmpdir.join('f.py').write('import pre_commit\n')
+        tmpdir.join('g.py').write('import cfgv\n')
+        _make_git()
+
+        assert main(()) == 1
+
+        expected = '[settings]\nknown_third_party=cfgv,pre_commit\n'
+        assert tmpdir.join('.isort.cfg').read() == expected
+
+        os.remove(tmpdir.join('g.py'))
+
+        assert main(()) == 1
+
+        expected = '[settings]\nknown_third_party=pre_commit\n'
+        assert tmpdir.join('.isort.cfg').read() == expected
