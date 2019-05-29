@@ -289,9 +289,7 @@ def test_returns_zero_no_changes_pyproject_toml(tmpdir):
 
 
 def test_removing_file_after_git_add(tmpdir):
-    '''
-    Regression test for issue #37
-    '''
+    """regression test for issue #37"""
     with tmpdir.as_cwd():
         tmpdir.join('.isort.cfg').write('[settings]\nknown_third_party=\n')
         tmpdir.join('f.py').write('import pre_commit\n')
