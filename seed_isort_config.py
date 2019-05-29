@@ -48,6 +48,8 @@ class Visitor(ast.NodeVisitor):
 def third_party_imports(filenames, appdirs=('.',)):
     visitor = Visitor(appdirs)
     for filename in filenames:
+        if not os.path.exists(filename):
+            continue
         with open(filename, 'rb') as f:
             visitor.visit(ast.parse(f.read(), filename=filename))
     return visitor.third_party
