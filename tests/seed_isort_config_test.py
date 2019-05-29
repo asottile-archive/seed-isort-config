@@ -301,7 +301,7 @@ def test_removing_file_after_git_add(tmpdir):
         expected = '[settings]\nknown_third_party=cfgv,pre_commit\n'
         assert tmpdir.join('.isort.cfg').read() == expected
 
-        os.remove(tmpdir.join('g.py'))
+        os.remove(str(tmpdir.join('g.py')))
 
         assert main(()) == 1
 
