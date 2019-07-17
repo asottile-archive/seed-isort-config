@@ -19,7 +19,7 @@ SUPPORTED_CONF_FILES = (
 )
 THIRD_PARTY_RE = re.compile(r'^known_third_party(\s*)=(\s*?)(?:\S.*)?$', re.M)
 KNOWN_OTHER_RE = re.compile(
-    r'^known_((?!third_party)\w+)\s*=\s*(.*)$', re.M,
+    r'^known_((?!third_party)\w+)\s*=\s*?(.*)$', re.M,
 )
 
 
