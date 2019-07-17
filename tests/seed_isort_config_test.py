@@ -4,6 +4,7 @@ import subprocess
 import mock
 import pytest
 
+from seed_isort_config import KNOWN_OTHER_RE
 from seed_isort_config import main
 from seed_isort_config import third_party_imports
 from seed_isort_config import THIRD_PARTY_RE
@@ -16,6 +17,28 @@ def test_third_party_re():
     # make sure whitespace isn't greedily matched
     matched = THIRD_PARTY_RE.search('known_third_party=\n').group()
     assert matched == 'known_third_party='
+
+
+def test_known_other_re():
+    isort_config = """
+[settings]
+known_first_party =
+known_third_party =dummy_thirdparty1,dummy_thirdparty2
+"""
+    assert KNOWN_OTHER_RE.search(isort_config)
+    assert KNOWN_OTHER_RE.search(isort_config.replace(" =", "="))
+    assert KNOWN_OTHER_RE.search(isort_config.replace(" =", " = "))
+    # make sure whitespace isn't greedily matched
+    negative_match = KNOWN_OTHER_RE.search(isort_config)
+    dummy_firstparty_module = "dummy_firstparty1"
+    positive_match = KNOWN_OTHER_RE.search(
+        isort_config.replace(
+            "known_first_party =",
+            "known_first_party=" + dummy_firstparty_module,
+        ),
+    )
+    assert negative_match.group(2) == ""
+    assert positive_match.group(2) == dummy_firstparty_module
 
 
 def test_list_third_party_imports(tmpdir):
