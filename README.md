@@ -52,7 +52,7 @@ This works especially well when integrated with [`pre-commit`][pre-commit].
 
 ```yaml
 -   repo: https://github.com/asottile/seed-isort-config
-    rev: v1.9.1
+    rev: v1.9.2
     hooks:
     -   id: seed-isort-config
 -   repo: https://github.com/pre-commit/mirrors-isort
