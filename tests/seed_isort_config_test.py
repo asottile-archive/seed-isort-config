@@ -13,6 +13,7 @@ from seed_isort_config import THIRD_PARTY_RE
 def test_third_party_re():
     assert THIRD_PARTY_RE.search('[isort]\nknown_third_party=cfgv\n')
     assert THIRD_PARTY_RE.search('[isort]\nknown_third_party = cfgv\n')
+    assert THIRD_PARTY_RE.search('[isort]\nknown_third_party\t=\tcfgv\n')
     assert not THIRD_PARTY_RE.search('[isort]\nknown_stdlib = os\n')
     # make sure whitespace isn't greedily matched
     matched = THIRD_PARTY_RE.search('known_third_party=\n').group()
@@ -28,6 +29,7 @@ known_third_party =dummy_thirdparty1,dummy_thirdparty2
     assert KNOWN_OTHER_RE.search(isort_config)
     assert KNOWN_OTHER_RE.search(isort_config.replace(" =", "="))
     assert KNOWN_OTHER_RE.search(isort_config.replace(" =", " = "))
+    assert KNOWN_OTHER_RE.search(isort_config.replace(" =", "\t=\t"))
     # make sure whitespace isn't greedily matched
     negative_match = KNOWN_OTHER_RE.search(isort_config)
     dummy_firstparty_module = "dummy_firstparty1"
