@@ -17,9 +17,11 @@ ENV_BLACKLIST = frozenset(('GIT_LITERAL_PATHSPECS', 'GIT_GLOB_PATHSPECS'))
 SUPPORTED_CONF_FILES = (
     '.editorconfig', '.isort.cfg', 'setup.cfg', 'tox.ini', 'pyproject.toml',
 )
-THIRD_PARTY_RE = re.compile(r'^known_third_party(\s*)=(\s*?)(?:\S.*)?$', re.M)
+THIRD_PARTY_RE = re.compile(
+    r'^known_third_party([ \t]*)=([ \t]*)(?:.*)?$', re.M,
+)
 KNOWN_OTHER_RE = re.compile(
-    r'^known_((?!third_party)\w+)\s*=\s*(.*)$', re.M,
+    r'^known_((?!third_party)\w+)[ \t]*=[ \t]*(.*)$', re.M,
 )
 
 
