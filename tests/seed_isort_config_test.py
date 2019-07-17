@@ -11,73 +11,31 @@ from seed_isort_config import THIRD_PARTY_RE
 
 
 @pytest.mark.parametrize(
-    ('isort_config', 'expected_groups'),
+    ('s', 'expected_groups'),
     (
         ('[isort]\nknown_third_party=\n', ('', '')),
-        ('[isort]\nknown_third_party =\n', (' ', '')),
-        ('[isort]\nknown_third_party = \n', (' ', ' ')),
-        ('[isort]\nknown_third_party\t=\n', ('\t', '')),
-        ('[isort]\nknown_third_party\t=\t\n', ('\t', '\t')),
-        ('[isort]\nknown_third_party=foo\n', ('', '')),
-        ('[isort]\nknown_third_party =foo\n', (' ', '')),
         ('[isort]\nknown_third_party = foo\n', (' ', ' ')),
-        ('[isort]\nknown_third_party\t=foo\n', ('\t', '')),
         ('[isort]\nknown_third_party\t=\tfoo\n', ('\t', '\t')),
-        ('[isort]\nknown_third_party =\nknown_first_party=bar\n', (' ', '')),
-        ('[isort]\nknown_third_party =\nknown_first_party = bar\n', (' ', '')),
+        ('[isort]\nknown_third_party =\nknown_wat=wat\n', (' ', '')),
     ),
 )
-def test_third_party_re(isort_config, expected_groups):
-    match = THIRD_PARTY_RE.search(isort_config)
+def test_known_third_party_re(s, expected_groups):
+    match = THIRD_PARTY_RE.search(s)
     assert match
     assert match.groups() == expected_groups
 
 
 @pytest.mark.parametrize(
-    ('isort_config', 'expected_groups'),
+    ('s', 'expected_groups'),
     (
-        ('[isort]\nknown_first_party=\n', ('first_party', '')),
-        ('[isort]\nknown_first_party =\n', ('first_party', '')),
-        ('[isort]\nknown_first_party = \n', ('first_party', '')),
-        ('[isort]\nknown_first_party\t=\n', ('first_party', '')),
-        ('[isort]\nknown_first_party\t=\t\n', ('first_party', '')),
-        ('[isort]\nknown_first_party=foo\n', ('first_party', 'foo')),
-        ('[isort]\nknown_first_party =foo\n', ('first_party', 'foo')),
-        ('[isort]\nknown_first_party = foo\n', ('first_party', 'foo')),
-        ('[isort]\nknown_first_party\t=foo\n', ('first_party', 'foo')),
-        ('[isort]\nknown_first_party\t=\tfoo\n', ('first_party', 'foo')),
-        (
-            '[isort]\nknown_first_party =\nknown_third_party=bar\n',
-            ('first_party', ''),
-        ),
-        (
-            '[isort]\nknown_first_party =\nknown_third_party =bar\n',
-            ('first_party', ''),
-        ),
-        (
-            '[isort]\nknown_first_party =\nknown_third_party = bar\n',
-            ('first_party', ''),
-        ),
-        (
-            '[isort]\nknown_first_party =\nknown_third_party\t=bar\n',
-            ('first_party', ''),
-        ),
-        (
-            '[isort]\nknown_first_party =\nknown_third_party\t=\tbar\n',
-            ('first_party', ''),
-        ),
-        (
-            '[isort]\nknown_first_party=foo\nknown_third_party=bar\n',
-            ('first_party', 'foo'),
-        ),
-        (
-            '[isort]\nknown_first_party = foo\nknown_third_party = bar\n',
-            ('first_party', 'foo'),
-        ),
+        ('[isort]\nknown_other=\n', ('other', '')),
+        ('[isort]\nknown_other = foo\n', ('other', 'foo')),
+        ('[isort]\nknown_other\t=\tfoo\n', ('other', 'foo')),
+        ('[isort]\nknown_other =\nknown_third_party=wat\n', ('other', '')),
     ),
 )
-def test_known_other_re(isort_config, expected_groups):
-    match = KNOWN_OTHER_RE.search(isort_config)
+def test_known_other_re(s, expected_groups):
+    match = KNOWN_OTHER_RE.search(s)
     assert match
     assert match.groups() == expected_groups
 
