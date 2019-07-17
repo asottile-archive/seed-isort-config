@@ -10,37 +10,76 @@ from seed_isort_config import third_party_imports
 from seed_isort_config import THIRD_PARTY_RE
 
 
-def test_third_party_re():
-    assert THIRD_PARTY_RE.search('[isort]\nknown_third_party=cfgv\n')
-    assert THIRD_PARTY_RE.search('[isort]\nknown_third_party = cfgv\n')
-    assert THIRD_PARTY_RE.search('[isort]\nknown_third_party\t=\tcfgv\n')
-    assert not THIRD_PARTY_RE.search('[isort]\nknown_stdlib = os\n')
-    # make sure whitespace isn't greedily matched
-    matched = THIRD_PARTY_RE.search('known_third_party=\n').group()
-    assert matched == 'known_third_party='
+@pytest.mark.parametrize(
+    ('isort_config', 'expected_groups'),
+    (
+        ('[isort]\nknown_third_party=\n', ('', '')),
+        ('[isort]\nknown_third_party =\n', (' ', '')),
+        ('[isort]\nknown_third_party = \n', (' ', ' ')),
+        ('[isort]\nknown_third_party\t=\n', ('\t', '')),
+        ('[isort]\nknown_third_party\t=\t\n', ('\t', '\t')),
+        ('[isort]\nknown_third_party=foo\n', ('', '')),
+        ('[isort]\nknown_third_party =foo\n', (' ', '')),
+        ('[isort]\nknown_third_party = foo\n', (' ', ' ')),
+        ('[isort]\nknown_third_party\t=foo\n', ('\t', '')),
+        ('[isort]\nknown_third_party\t=\tfoo\n', ('\t', '\t')),
+        ('[isort]\nknown_third_party =\nknown_first_party=bar\n', (' ', '')),
+        ('[isort]\nknown_third_party =\nknown_first_party = bar\n', (' ', '')),
+    ),
+)
+def test_third_party_re(isort_config, expected_groups):
+    match = THIRD_PARTY_RE.search(isort_config)
+    assert match
+    assert match.groups() == expected_groups
 
 
-def test_known_other_re():
-    isort_config = """
-[settings]
-known_first_party =
-known_third_party =dummy_thirdparty1,dummy_thirdparty2
-"""
-    assert KNOWN_OTHER_RE.search(isort_config)
-    assert KNOWN_OTHER_RE.search(isort_config.replace(" =", "="))
-    assert KNOWN_OTHER_RE.search(isort_config.replace(" =", " = "))
-    assert KNOWN_OTHER_RE.search(isort_config.replace(" =", "\t=\t"))
-    # make sure whitespace isn't greedily matched
-    negative_match = KNOWN_OTHER_RE.search(isort_config)
-    dummy_firstparty_module = "dummy_firstparty1"
-    positive_match = KNOWN_OTHER_RE.search(
-        isort_config.replace(
-            "known_first_party =",
-            "known_first_party=" + dummy_firstparty_module,
+@pytest.mark.parametrize(
+    ('isort_config', 'expected_groups'),
+    (
+        ('[isort]\nknown_first_party=\n', ('first_party', '')),
+        ('[isort]\nknown_first_party =\n', ('first_party', '')),
+        ('[isort]\nknown_first_party = \n', ('first_party', '')),
+        ('[isort]\nknown_first_party\t=\n', ('first_party', '')),
+        ('[isort]\nknown_first_party\t=\t\n', ('first_party', '')),
+        ('[isort]\nknown_first_party=foo\n', ('first_party', 'foo')),
+        ('[isort]\nknown_first_party =foo\n', ('first_party', 'foo')),
+        ('[isort]\nknown_first_party = foo\n', ('first_party', 'foo')),
+        ('[isort]\nknown_first_party\t=foo\n', ('first_party', 'foo')),
+        ('[isort]\nknown_first_party\t=\tfoo\n', ('first_party', 'foo')),
+        (
+            '[isort]\nknown_first_party =\nknown_third_party=bar\n',
+            ('first_party', ''),
         ),
-    )
-    assert negative_match.group(2) == ""
-    assert positive_match.group(2) == dummy_firstparty_module
+        (
+            '[isort]\nknown_first_party =\nknown_third_party =bar\n',
+            ('first_party', ''),
+        ),
+        (
+            '[isort]\nknown_first_party =\nknown_third_party = bar\n',
+            ('first_party', ''),
+        ),
+        (
+            '[isort]\nknown_first_party =\nknown_third_party\t=bar\n',
+            ('first_party', ''),
+        ),
+        (
+            '[isort]\nknown_first_party =\nknown_third_party\t=\tbar\n',
+            ('first_party', ''),
+        ),
+        (
+            '[isort]\nknown_first_party=foo\nknown_third_party=bar\n',
+            ('first_party', 'foo'),
+        ),
+        (
+            '[isort]\nknown_first_party = foo\nknown_third_party = bar\n',
+            ('first_party', 'foo'),
+        ),
+    ),
+)
+def test_known_other_re(isort_config, expected_groups):
+    match = KNOWN_OTHER_RE.search(isort_config)
+    assert match
+    assert match.groups() == expected_groups
 
 
 def test_list_third_party_imports(tmpdir):
