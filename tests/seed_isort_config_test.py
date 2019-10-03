@@ -329,8 +329,10 @@ def test_removing_file_after_git_add(tmpdir):
 def test_missing_git_from_path(tmpdir):
     """expect user-friendly error message for a missing git"""
     with pytest.raises(OSError) as excinfo:
-        with mock.patch.object(subprocess, 'check_output',
-                               side_effect=OSError):
+        with mock.patch.object(
+            subprocess, 'check_output',
+            side_effect=OSError
+        ):
             with tmpdir.as_cwd():
                 _make_git()
                 main(())
