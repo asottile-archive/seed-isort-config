@@ -326,7 +326,7 @@ def test_removing_file_after_git_add(tmpdir):
         assert tmpdir.join('.isort.cfg').read() == expected
 
 
-    def test_missing_git_from_path():
+def test_missing_git_from_path():
     """expect user-friendly error message for a missing git"""
     with pytest.raises(OSError,
                        match='Cannot find git. Make sure it is in your PATH'):
