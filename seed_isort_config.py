@@ -95,7 +95,10 @@ def main(argv=None):
 
     cmd = ('git', 'ls-files', '--', '*.py')
     env = {k: v for k, v in os.environ.items() if k not in ENV_BLACKLIST}
-    out = subprocess.check_output(cmd, env=env).decode('UTF-8')
+    try:
+        out = subprocess.check_output(cmd, env=env).decode('UTF-8')
+    except OSError:
+        raise OSError('Cannot find git. Make sure it is in your PATH')
     filenames = out.splitlines() + args.extra
 
     exclude = re.compile(args.exclude)
