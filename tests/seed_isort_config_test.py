@@ -331,7 +331,7 @@ def test_missing_git_from_path(tmpdir):
     with pytest.raises(OSError) as excinfo:
         with mock.patch.object(
             subprocess, 'check_output',
-            side_effect=OSError
+            side_effect=OSError,
         ):
             with tmpdir.as_cwd():
                 _make_git()
