@@ -13,9 +13,9 @@ from aspy.refactor_imports.classify import classify_import
 from aspy.refactor_imports.classify import ImportType
 
 
-ENV_BLACKLIST = frozenset(
-    ('GIT_LITERAL_PATHSPECS', 'GIT_GLOB_PATHSPECS', 'GIT_NOGLOB_PATHSPECS'),
-)
+ENV_BLACKLIST = frozenset((
+    'GIT_LITERAL_PATHSPECS', 'GIT_GLOB_PATHSPECS', 'GIT_NOGLOB_PATHSPECS',
+))
 SUPPORTED_CONF_FILES = (
     '.editorconfig', '.isort.cfg', 'setup.cfg', 'tox.ini', 'pyproject.toml',
 )
