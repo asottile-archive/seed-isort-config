@@ -274,6 +274,12 @@ def test_integration_git_literal_pathspecs_1(tmpdir):
         test_integration_isort_cfg(tmpdir)
 
 
+def test_integration_git_noglob_pathspecs(tmpdir):
+    """see #47"""
+    with mock.patch.dict(os.environ, {'GIT_NOGLOB_PATHSPECS': '1'}):
+        test_integration_isort_cfg(tmpdir)
+
+
 def test_exclude(tmpdir):
     with tmpdir.as_cwd():
         tmpdir.join('f.py').write('import cfgv\n')
