@@ -55,8 +55,8 @@ This works especially well when integrated with [`pre-commit`][pre-commit].
     rev: v1.9.4
     hooks:
     -   id: seed-isort-config
--   repo: https://github.com/pre-commit/mirrors-isort
-    rev: v4.3.21  # pick the isort version you'd like to use from https://github.com/pre-commit/mirrors-isort/releases
+-   repo: https://github.com/timothycrosley/isort
+    rev: 4.3.21  # pick the isort version you'd like to use from https://github.com/timothycrosley/isort/releases
     hooks:
     -   id: isort
 ```
