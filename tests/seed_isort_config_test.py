@@ -1,7 +1,7 @@
 import os
 import subprocess
+from unittest import mock
 
-import mock
 import pytest
 
 from seed_isort_config import KNOWN_OTHER_RE
