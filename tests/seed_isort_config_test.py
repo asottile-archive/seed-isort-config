@@ -13,10 +13,17 @@ from seed_isort_config import THIRD_PARTY_RE
 @pytest.mark.parametrize(
     ('s', 'expected_groups'),
     (
-        ('[isort]\nknown_third_party=\n', ('', '')),
-        ('[isort]\nknown_third_party = foo\n', (' ', ' ')),
-        ('[isort]\nknown_third_party\t=\tfoo\n', ('\t', '\t')),
-        ('[isort]\nknown_third_party =\nknown_wat=wat\n', (' ', '')),
+        ('[isort]\nknown_third_party=\n', ('', '', '')),
+        ('[isort]\nknown_third_party = foo\n', (' ', ' ', '')),
+        ('[isort]\nknown_third_party\t=\tfoo\n', ('\t', '\t', '')),
+        ('[isort]\nknown_third_party =\nknown_wat=wat\n', (' ', '', '')),
+        ('[isort]\r\nknown_third_party=\r\n', ('', '', '\r')),
+        ('[isort]\r\nknown_third_party = foo\r\n', (' ', ' ', '\r')),
+        ('[isort]\r\nknown_third_party\t=\tfoo\r\n', ('\t', '\t', '\r')),
+        (
+            '[isort]\r\nknown_third_party =\r\nknown_wat=wat\r\n',
+            (' ', '', '\r'),
+        ),
     ),
 )
 def test_known_third_party_re(s, expected_groups):
@@ -341,3 +348,16 @@ def test_missing_git_from_path(tmpdir):
                 main(())
             msg, = excinfo.value.args
             assert msg == 'Cannot find git. Make sure it is in your PATH'
+
+
+def test_newlines_preserved(tmpdir):
+    with tmpdir.as_cwd():
+        cfg = tmpdir.join('.isort.cfg')
+        cfg.write_binary(b'[settings]\nknown_third_party=\r\n')
+        tmpdir.join('g.py').write('import cfgv\n')
+        _make_git()
+
+        assert main(()) == 1
+
+        expected = b'[settings]\nknown_third_party=cfgv\r\n'
+        assert cfg.read_binary() == expected
