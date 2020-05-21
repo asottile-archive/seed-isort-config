@@ -138,6 +138,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             else:
                 with open(filename, 'w', encoding='UTF-8', newline='') as f:
                     f.write(new_contents)
+                print(f'{filename} updated.')
                 return 1
     else:
         filename = os.path.join(args.settings_path, '.isort.cfg')

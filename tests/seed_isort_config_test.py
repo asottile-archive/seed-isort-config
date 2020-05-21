@@ -361,3 +361,18 @@ def test_newlines_preserved(tmpdir):
 
         expected = b'[settings]\nknown_third_party=cfgv\r\n'
         assert cfg.read_binary() == expected
+
+
+def test_output_file_changed(tmpdir, capsys):
+    with tmpdir.as_cwd():
+        cfg = tmpdir.join('.isort.cfg')
+        cfg.write_binary(b'[settings]\nknown_third_party=\r\n')
+        tmpdir.join('g.py').write('import cfgv\n')
+        _make_git()
+
+        assert main(()) == 1
+
+        assert './.isort.cfg updated.\n' == capsys.readouterr().out
+
+        expected = b'[settings]\nknown_third_party=cfgv\r\n'
+        assert cfg.read_binary() == expected
