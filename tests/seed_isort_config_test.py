@@ -13,16 +13,24 @@ from seed_isort_config import THIRD_PARTY_RE
 @pytest.mark.parametrize(
     ('s', 'expected_groups'),
     (
-        ('[isort]\nknown_third_party=\n', ('', '', '')),
-        ('[isort]\nknown_third_party = foo\n', (' ', ' ', '')),
-        ('[isort]\nknown_third_party\t=\tfoo\n', ('\t', '\t', '')),
-        ('[isort]\nknown_third_party =\nknown_wat=wat\n', (' ', '', '')),
-        ('[isort]\r\nknown_third_party=\r\n', ('', '', '\r')),
-        ('[isort]\r\nknown_third_party = foo\r\n', (' ', ' ', '\r')),
-        ('[isort]\r\nknown_third_party\t=\tfoo\r\n', ('\t', '\t', '\r')),
+        ('[isort]\nknown_third_party=\n', ('', '', '', '')),
+        ('[isort]\nknown_third_party = foo\n', ('', ' ', ' ', '')),
+        ('[isort]\nknown_third_party\t=\tfoo\n', ('', '\t', '\t', '')),
+        ('[isort]\nknown_third_party =\nknown_wat=wat\n', ('', ' ', '', '')),
+        ('[isort]\r\nknown_third_party=\r\n', ('', '', '', '\r')),
+        ('[isort]\r\nknown_third_party = foo\r\n', ('', ' ', ' ', '\r')),
+        ('[isort]\r\nknown_third_party\t=\tfoo\r\n', ('', '\t', '\t', '\r')),
         (
             '[isort]\r\nknown_third_party =\r\nknown_wat=wat\r\n',
-            (' ', '', '\r'),
+            ('', ' ', '', '\r'),
+        ),
+        (
+            '[tool.isort]\r\n    known_third_party =\r\nknown_wat=wat\r\n',
+            ('    ', ' ', '', '\r'),
+        ),
+        (
+            '[tool.isort]\r\n\tknown_third_party =\r\nknown_wat=wat\r\n',
+            ('\t', ' ', '', '\r'),
         ),
     ),
 )
@@ -39,6 +47,8 @@ def test_known_third_party_re(s, expected_groups):
         ('[isort]\nknown_other = foo\n', ('other', 'foo')),
         ('[isort]\nknown_other\t=\tfoo\n', ('other', 'foo')),
         ('[isort]\nknown_other =\nknown_third_party=wat\n', ('other', '')),
+        ('[tool.isort]\n    known_other=\n', ('other', '')),
+        ('[tool.isort]\n\tknown_other=\n', ('other', '')),
     ),
 )
 def test_known_other_re(s, expected_groups):
@@ -375,4 +385,17 @@ def test_output_file_changed(tmpdir, capsys):
         assert './.isort.cfg updated.\n' == capsys.readouterr().out
 
         expected = b'[settings]\nknown_third_party=cfgv\r\n'
+        assert cfg.read_binary() == expected
+
+
+def test_indentation_preserved(tmpdir):
+    with tmpdir.as_cwd():
+        cfg = tmpdir.join('pyproject.toml')
+        cfg.write_binary(b'[tool.isort]\n\tknown_third_party=\r\n')
+        tmpdir.join('g.py').write('import cfgv\n')
+        _make_git()
+
+        assert main(()) == 1
+
+        expected = b'[tool.isort]\n\tknown_third_party=["cfgv"]\r\n'
         assert cfg.read_binary() == expected

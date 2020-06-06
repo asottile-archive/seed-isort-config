@@ -18,10 +18,10 @@ SUPPORTED_CONF_FILES = (
     '.editorconfig', '.isort.cfg', 'setup.cfg', 'tox.ini', 'pyproject.toml',
 )
 THIRD_PARTY_RE = re.compile(
-    r'^known_third_party([ \t]*)=([ \t]*)(?:.*?)?(\r?)$', re.M,
+    r'^([ \t]*)known_third_party([ \t]*)=([ \t]*)(?:.*?)?(\r?)$', re.M,
 )
 KNOWN_OTHER_RE = re.compile(
-    r'^known_((?!third_party)\w+)[ \t]*=[ \t]*(.*)$', re.M,
+    r'^[ \t]*known_((?!third_party)\w+)[ \t]*=[ \t]*(.*)$', re.M,
 )
 
 
@@ -131,7 +131,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
         if THIRD_PARTY_RE.search(contents):
             third_party_s = dump(sorted(third_party))
-            replacement = fr'known_third_party\1=\2{third_party_s}\3'
+            replacement = fr'\1known_third_party\2=\3{third_party_s}\4'
             new_contents = THIRD_PARTY_RE.sub(replacement, contents)
             if new_contents == contents:
                 return 0
