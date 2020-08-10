@@ -1,3 +1,9 @@
+# DEPRECATED
+
+this is no longer needed as of `isort>=5`
+
+___
+
 [![Build Status](https://dev.azure.com/asottile/asottile/_apis/build/status/asottile.seed-isort-config?branchName=master)](https://dev.azure.com/asottile/asottile/_build/latest?definitionId=20&branchName=master)
 [![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/asottile/asottile/20/master.svg)](https://dev.azure.com/asottile/asottile/_build/latest?definitionId=20&branchName=master)
 
